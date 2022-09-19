@@ -1,6 +1,6 @@
 name: "Update work item state when PR is merged, opened, closed or when branch is created"
 description: "This action will update work item state within Azure DevOps when the PR is merged, opened, closed or when branch is created"
-author: "Canarys Automations, Marcin Gadomski"
+author: "Marcin Gadomski"
 branding:
   icon: "git-pull-request"
   color: "black"
