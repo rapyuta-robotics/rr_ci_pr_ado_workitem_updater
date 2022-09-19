@@ -104,3 +104,4 @@ dist
 
 # node_modules
 package-lock.json
+node_modules/.bin
