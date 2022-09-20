@@ -5,7 +5,7 @@ const fetch = require("node-fetch");
 const prHandler = require("./handlers/prHandler");
 const branchHandler = require("./handlers/branchHandler");
 const staticFunctions = require("./staticFunctions");
-const version = "2.0.0";
+const version = "2.0.2";
 global.Headers = fetch.Headers;
 
 main();
@@ -20,6 +20,11 @@ async function main(){
             console.log ("PR event detected");
 
             var prName = await prHandler.getPrTitle();
+
+            if (prName === undefined) {
+                console.log("Couldn't read PR name properly, ending checks");
+                return;
+            }
 
             if (prName.includes("Code cleanup") ||
                 prName.includes("Swagger update")) {
