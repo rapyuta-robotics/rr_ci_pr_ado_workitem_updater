@@ -24,18 +24,22 @@ exports.getWorkItemIdFromBranchTitle = getWorkItemIdFromBranchTitle;
 async function handleOpenedBranch(workItemId) {
     var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
     var gitHubBranchUrls = workItem.fields["Custom.GitHubbranchURLs"];
+    var currentWorkItemState = workItem.fields["System.State"];
 
-    console.log(gitHubBranchUrls);
+    if (currentWorkItemState === process.env.propenstate) {
+        console.log("PR is already open on this branch, not moving to in progress")
+    }
+    else {
+        let patchDocument = [
+            {
+                op: "add",
+                path: "/fields/System.State",
+                value: process.env.inprogressstate
+            }
+        ];
 
-    let patchDocument = [
-        {
-            op: "add",
-            path: "/fields/System.State",
-            value: process.env.inprogressstate
-        }
-    ];
-
-    await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
+        await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
+    }
 
     if (gitHubBranchUrls === undefined || 
         gitHubBranchUrls.includes("https://github.com/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/tree/"+process.env.branch_name+"\n") == false) {
