@@ -37,7 +37,8 @@ async function handleOpenedBranch(workItemId) {
 
     await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
 
-    if (gitHubBranchUrls.includes("https://github.com/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/tree/"+process.env.branch_name+"\n") == false) {
+    if (gitHubBranchUrls === undefined || 
+        gitHubBranchUrls.includes("https://github.com/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/tree/"+process.env.branch_name+"\n") == false) {
         patchDocument = [
             {
                 op: "add",
