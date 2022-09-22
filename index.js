@@ -27,8 +27,9 @@ async function main(){
             }
 
             if (prName.includes("Code cleanup") ||
-                prName.includes("Swagger update")) {
-                    console.log ("No checkups for the code cleanup or swagger update branches");
+                prName.includes("Swagger update") ||
+                prName.includes("Master to Dev")) {
+                    console.log ("No checkups for the code cleanup or swagger update branches or master to dev sync");
                     return;
             }
 
