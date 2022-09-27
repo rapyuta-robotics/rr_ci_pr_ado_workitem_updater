@@ -57,6 +57,8 @@ async function main(){
             console.log ("Branch event detected");
 
             var branchName = branchHandler.getBranchTitle();
+
+            console.log ("Branch name: " + branchName);
             
             if (branchName.toLowerCase().includes("code-cleanup".toLowerCase()) ||
                 branchName.toLowerCase().includes("code cleanup".toLowerCase()) ||
