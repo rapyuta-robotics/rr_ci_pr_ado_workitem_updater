@@ -59,7 +59,9 @@ async function main(){
             var branchName = branchHandler.getBranchTitle();
             
             if (branchName.toLowerCase().includes("code-cleanup".toLowerCase()) ||
-                branchName.toLowerCase().includes("swagger-update".toLowerCase()) ) {
+                branchName.toLowerCase().includes("code cleanup".toLowerCase()) ||
+                branchName.toLowerCase().includes("swagger-update".toLowerCase()) ||
+                branchName.toLowerCase().includes("swagger update".toLowerCase()) ) {
                 console.log ("No checkups for the code cleanup or swagger update branches");
                 return;
             }
