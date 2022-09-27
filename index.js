@@ -26,9 +26,9 @@ async function main(){
                 return;
             }
 
-            if (prName.includes("Code cleanup") ||
-                prName.includes("Swagger update") ||
-                prName.includes("Master to Dev")) {
+            if (prName.toLowerCase().includes("Code cleanup".toLowerCase()) ||
+                prName.toLowerCase().includes("Swagger update".toLowerCase()) ||
+                prName.toLowerCase().includes("Master to Dev".toLowerCase())) {
                     console.log ("No checkups for the code cleanup or swagger update branches or master to dev sync");
                     return;
             }
@@ -58,8 +58,8 @@ async function main(){
 
             var branchName = branchHandler.getBranchTitle();
             
-            if (branchName.includes("code-cleanup") ||
-                branchName.includes("swagger-update") ) {
+            if (branchName.toLowerCase().includes("code-cleanup".toLowerCase()) ||
+                branchName.toLowerCase().includes("swagger-update".toLowerCase()) ) {
                 console.log ("No checkups for the code cleanup or swagger update branches");
                 return;
             }
