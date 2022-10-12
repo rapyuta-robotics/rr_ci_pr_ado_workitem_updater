@@ -37,15 +37,16 @@ async function main(){
             var workItemId = prHandler.getWorkItemIdFromPrTitle(prName);
 
             try {
-                if (prHandler.isPrClosed()) {
-                    console.log("PR was closed without merging, so moving AB#"+workItemId+" to "+process.env.inprogressstate+ " state");
-                    await prHandler.handleClosedPr(workItemId);
-                } else if (prHandler.isPrMerged()) {
+                if (prHandler.isPrMerged()) {
                     console.log("PR was merged, so moving AB#"+workItemId+" to "+process.env.closedstate+" state");
                     await prHandler.handleMergedPr(workItemId);
                 } else if (prHandler.isPrOpen()) {
                     console.log("PR was opened, so moving AB#"+workItemId+" to "+process.env.propenstate+" state");
                     await prHandler.handleOpenedPr(workItemId);
+                }
+                else if (prHandler.isPrClosed()) {
+                    console.log("PR was closed without merging, so moving AB#"+workItemId+" to "+process.env.inprogressstate+ " state");
+                    await prHandler.handleClosedPr(workItemId);
                 }
             } catch (err) {
                 console.log("Couldn't update the work item");
