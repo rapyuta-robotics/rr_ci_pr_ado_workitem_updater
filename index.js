@@ -28,7 +28,8 @@ async function main(){
 
             if (prName.toLowerCase().includes("Code cleanup".toLowerCase()) ||
                 prName.toLowerCase().includes("Swagger update".toLowerCase()) ||
-                prName.toLowerCase().includes("Master to Dev".toLowerCase())) {
+                prName.toLowerCase().includes("Master to Dev".toLowerCase()) ||
+                prName.toLowerCase().includes("Dev to Master".toLowerCase())) {
                     console.log ("No checkups for the code cleanup or swagger update branches or master to dev sync");
                     return;
             }
@@ -36,15 +37,15 @@ async function main(){
             var workItemId = prHandler.getWorkItemIdFromPrTitle(prName);
 
             try {
-                if (prHandler.isPrOpen()) {
-                    console.log("PR was opened, so moving AB#"+workItemId+" to "+process.env.propenstate+" state");
-                    await prHandler.handleOpenedPr(workItemId);
+                if (prHandler.isPrClosed()) {
+                    console.log("PR was closed without merging, so moving AB#"+workItemId+" to "+process.env.inprogressstate+ " state");
+                    await prHandler.handleClosedPr(workItemId);
                 } else if (prHandler.isPrMerged()) {
                     console.log("PR was merged, so moving AB#"+workItemId+" to "+process.env.closedstate+" state");
                     await prHandler.handleMergedPr(workItemId);
-                } else if (prHandler.isPrClosed()) {
-                    console.log("PR was closed without merging, so moving AB#"+workItemId+" to "+process.env.inprogressstate+ " state");
-                    await prHandler.handleClosedPr(workItemId);
+                } else if (prHandler.isPrOpen()) {
+                    console.log("PR was opened, so moving AB#"+workItemId+" to "+process.env.propenstate+" state");
+                    await prHandler.handleOpenedPr(workItemId);
                 }
             } catch (err) {
                 console.log("Couldn't update the work item");
