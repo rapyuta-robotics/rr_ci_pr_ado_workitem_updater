@@ -37,6 +37,11 @@ async function main(){
             var workItemId = prHandler.getWorkItemIdFromPrTitle(prName);
 
             try {
+                prHandler.isPrOpen();
+                prHandler.isPrClosed();
+                prHandler.isPrMerged();
+
+
                 if (prHandler.isPrOpen()) {
                     console.log("PR was opened, so moving AB#"+workItemId+" to "+process.env.propenstate+" state");
                     await prHandler.handleOpenedPr(workItemId);
