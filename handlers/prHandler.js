@@ -81,21 +81,18 @@ exports.handleClosedPr = handleClosedPr;
 
 async function isPrOpen(pullRequestNumber) {
     var pullRequestStatus = await getPrState(pullRequestNumber);
-    console.log("pullRequestStatus == " + pullRequestStatus)
     return pullRequestStatus === "open";
 }
 exports.isPrOpen = isPrOpen;
 
 async function isPrMerged(pullRequestNumber) {
     var mergeStatus = await getMergeState(pullRequestNumber);
-    console.log("mergeStatus == " + mergeStatus);
     return mergeStatus === 204;
 }
 exports.isPrMerged = isPrMerged;
 
 async function isPrClosed(pullRequestNumber) {
     var pullRequestStatus = await getPrState(pullRequestNumber);
-    console.log("pullRequestStatus == " + pullRequestStatus)
     return pullRequestStatus === "closed";
 }
 exports.isPrClosed = isPrClosed;

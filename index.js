@@ -5,7 +5,7 @@ const fetch = require("node-fetch");
 const prHandler = require("./handlers/prHandler");
 const branchHandler = require("./handlers/branchHandler");
 const staticFunctions = require("./staticFunctions");
-const version = "2.0.3";
+const version = "2.0.4";
 global.Headers = fetch.Headers;
 
 main();
