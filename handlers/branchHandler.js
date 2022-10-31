@@ -59,7 +59,7 @@ async function handleOpenedBranch(workItemId) {
         await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
     }
     else {
-        console.log("GutHub branch already added to the task, skipping editing the section");
+        console.log("GitHub branch already added to the task, skipping editing the section");
     }
 
     return true;
