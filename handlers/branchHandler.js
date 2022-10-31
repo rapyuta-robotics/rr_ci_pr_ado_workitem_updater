@@ -43,6 +43,7 @@ async function handleOpenedBranch(workItemId) {
 
     var branchUrl = "https://github.com/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/tree/"+process.env.branch_name;
     var encodedBranchUrl = encodeURI(branchUrl);
+    console.log("GitHub Branch URL: " + encodedBranchUrl)
 
     if (gitHubBranchUrls === undefined || 
         gitHubBranchUrls.includes(encodedBranchUrl) == false) {
@@ -55,6 +56,9 @@ async function handleOpenedBranch(workItemId) {
         ]
 
         await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
+    }
+    else {
+        console.log("GutHub branch already added to the task, skipping editing the section");
     }
 
     return true;
