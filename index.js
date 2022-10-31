@@ -67,8 +67,8 @@ async function main(){
                 branchName.toLowerCase().includes("code cleanup".toLowerCase()) ||
                 branchName.toLowerCase().includes("swagger-update".toLowerCase()) ||
                 branchName.toLowerCase().includes("swagger update".toLowerCase()) ||
-                branchName.toLowerCase().includes("master".toLowerCase()) ||
-                branchName.toLowerCase().includes("dev".toLowerCase()) ) {
+                (branchName.toLowerCase().includes("feature".toLowerCase()) === false && branchName.toLowerCase().includes("master".toLowerCase())) ||
+                (branchName.toLowerCase().includes("feature".toLowerCase()) === false && branchName.toLowerCase().includes("dev".toLowerCase()))) {
                 console.log ("No checkups for the code cleanup or swagger update or master/dev branches");
                 return;
             }
