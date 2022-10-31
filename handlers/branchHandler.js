@@ -41,13 +41,16 @@ async function handleOpenedBranch(workItemId) {
         await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
     }
 
+    var branchUrl = "https://github.com/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/tree/"+process.env.branch_name;
+    var encodedBranchUrl = encodeURI(branchUrl);
+
     if (gitHubBranchUrls === undefined || 
-        gitHubBranchUrls.includes("https://github.com/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/tree/"+process.env.branch_name+"\n") == false) {
+        gitHubBranchUrls.includes(encodedBranchUrl) == false) {
         patchDocument = [
             {
                 op: "add",
                 path: "/fields/Custom.GitHubbranchURLs",
-                value: gitHubBranchUrls + "<div><a href=\""+"https://github.com/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/tree/"+process.env.branch_name+""+"\">"+process.env.ghrepo+" - "+process.env.branch_name+"</a></div>"
+                value: gitHubBranchUrls + "<div><a href=\""+encodedBranchUrl+"\">"+process.env.ghrepo+" - "+process.env.branch_name+"</a></div>"
             }
         ]
 
