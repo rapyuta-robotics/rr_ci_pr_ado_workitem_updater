@@ -43,7 +43,7 @@ async function handleOpenedBranch(workItemId) {
 
     var branchUrl = "https://github.com/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/tree/"+process.env.branch_name;
     var encodedBranchUrl = encodeURI(branchUrl);
-    encodedBranchUrl = encodedBranchUrl.replaceAll("#", "%23");
+    encodedBranchUrl = encodedBranchUrl.replace("#", "%23");
     console.log("GitHub Branch URL: " + encodedBranchUrl)
 
     if (gitHubBranchUrls === undefined || 
