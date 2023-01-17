@@ -14,6 +14,8 @@ async function getPrTitle() {
         });
 
         const jsonResponse = await fetchResponse.json();
+        
+        console.log("PR Name: " + jsonResponse.title);
 
         return jsonResponse.title;
     } catch (err) {
