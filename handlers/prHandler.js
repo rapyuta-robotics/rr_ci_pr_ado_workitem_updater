@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 const staticFunctions = require('../staticFunctions');
 const azureDevOpsHandler = require('./azureDevOpsHandler');
 
-async function getPrTitle() {
+async function getPrBody() {
     try {
         const requestUrl = "https://api.github.com/repos/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/pulls/"+process.env.pull_number;
 
@@ -15,17 +15,17 @@ async function getPrTitle() {
 
         const jsonResponse = await fetchResponse.json();
 
-        return jsonResponse.title;
+        return jsonResponse.body;
     } catch (err) {
         console.log("Couldn't obtain PR title for PR number " + process.env.pull_number);
         core.setFailed(err.toString());
     }
 }
-exports.getPrTitle = getPrTitle;
+exports.getPrBody = getPrBody;
 
-function getWorkItemIdFromPrTitle(fullPrTitle) {
+function getWorkItemIdFromPrTitle(fullPrBody) {
     try {
-        var foundMatches = fullPrTitle.match(/AB#[(0-9)]*/g);
+        var foundMatches = fullPrBody.match(/AB#[(0-9)]*/g);
         var fullWorkItemId = foundMatches[0];
         var workItemIdAlone = fullWorkItemId.match(/[0-9]*/g)[3];
 
