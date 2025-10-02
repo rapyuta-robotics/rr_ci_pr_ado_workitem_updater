@@ -19,7 +19,7 @@ async function main(){
         if (process.env.GITHUB_EVENT_NAME.includes("pull_request")){
             console.log ("PR event detected");
 
-            var prName = await prHandler.getPrTitle();
+            var prName = await prHandler.getPrBody();
 
             if (prName === undefined) {
                 console.log("Couldn't read PR name properly, ending checks");
