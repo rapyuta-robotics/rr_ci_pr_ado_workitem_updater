@@ -4,6 +4,25 @@ const fetch = require("node-fetch");
 const staticFunctions = require('../staticFunctions');
 const azureDevOpsHandler = require('./azureDevOpsHandler');
 
+async function getPrTitle() {
+    try {
+        const requestUrl = "https://api.github.com/repos/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/pulls/"+process.env.pull_number;
+
+        const fetchResponse = await fetch(requestUrl, {
+            method: 'GET',
+            headers: staticFunctions.getRequestHeaders()
+        });
+
+        const jsonResponse = await fetchResponse.json();
+
+        return jsonResponse.title;
+    } catch (err) {
+        console.log("Couldn't obtain PR title for PR number " + process.env.pull_number);
+        core.setFailed(err.toString());
+    }
+}
+exports.getPrTitle = getPrTitle;
+
 async function getPrBody() {
     try {
         const requestUrl = "https://api.github.com/repos/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/pulls/"+process.env.pull_number;
@@ -17,7 +36,7 @@ async function getPrBody() {
 
         return jsonResponse.body;
     } catch (err) {
-        console.log("Couldn't obtain PR title for PR number " + process.env.pull_number);
+        console.log("Couldn't obtain PR Body for PR number " + process.env.pull_number);
         core.setFailed(err.toString());
     }
 }

@@ -5,8 +5,8 @@ test('Fetching the work item number from PR title', () => {
     expect(prhandler.getWorkItemIdFromPrTitle("AB#8790 sending email notifications to participants about the event")).toBe("8790");
 });
 
-test('Getting PR title', async () => {
-    var prTitle = await prhandler.getPrTitle();
+test('Getting PR Body', async () => {
+    var prTitle = await prhandler.getPrBody();
     expect(prTitle).toBe("AB#8790 sending email notifications to participants about the event");
 });
 
