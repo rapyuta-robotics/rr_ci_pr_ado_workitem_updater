@@ -5,6 +5,7 @@ const fetch = require("node-fetch");
 const prHandler = require("./handlers/prHandler");
 const branchHandler = require("./handlers/branchHandler");
 const staticFunctions = require("./staticFunctions");
+const azureDevOpsHandler = require("./handlers/azureDevOpsHandler");
 const version = "2.0.5";
 global.Headers = fetch.Headers;
 
@@ -28,6 +29,18 @@ async function main(){
 
             var workItemId = prHandler.getWorkItemIdFromPrTitle(prName);
 
+            // Check if the Linked work item is not either a Maintenance Story, Enabler Story, User Story, Task, or Feature
+            var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
+            if (workItem.fields["System.WorkItemType"] === "Task" || workItem.fields["System.WorkItemType"] === "Maintenance Story"  || workItem.fields["System.WorkItemType"] === "Enabler Story"  || workItem.fields["System.WorkItemType"] === "User Story" || workItem.fields["System.WorkItemType"] === "Feature") {
+                console.log("Linked work item is a Task, Story Type or Feature, continuing");
+                return;
+            }
+            else {
+                console.log("Linked work item is not a Task, Story Type or Feature, Exiting");
+                core.setFailed("Linked work item is not a Task, Story Type or Feature");
+            }
+
+            // Move the work item to the correct state
             try {
                 if ((await prHandler.isPrOpen()) === true) {
                     console.log("PR was opened, so moving AB#"+workItemId+" to "+process.env.propenstate+" state");
