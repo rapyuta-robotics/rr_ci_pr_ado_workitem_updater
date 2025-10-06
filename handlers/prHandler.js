@@ -61,7 +61,7 @@ async function handleOpenedPr(workItemId) {
     var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
     var currentWorkItemState = workItem.fields["System.State"];
 
-    if (currentWorkItemState === process.env.propenstate) {
+    if (currentWorkItemState !== process.env.closedstate) {
         let patchDocument = [
             {
                 op: "add",
@@ -100,12 +100,12 @@ async function handleClosedPr(workItemId) {
     var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
     var currentWorkItemState = workItem.fields["System.State"];
 
-    if (currentWorkItemState === process.env.inprogressstate || currentWorkItemState === process.env.openstate) {
+    if (currentWorkItemState === process.env.inprogressstate) {
         let patchDocument = [
             {
                 op: "add",
                 path: "/fields/System.State",
-                value: process.env.inprogressstate
+                value: process.env.openstate
             }
         ];
 
