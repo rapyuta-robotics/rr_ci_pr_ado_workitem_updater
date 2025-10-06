@@ -56,44 +56,61 @@ function getWorkItemIdFromPrTitle(fullPrBody) {
 }
 exports.getWorkItemIdFromPrTitle = getWorkItemIdFromPrTitle;
 
+// Handling Open PRs, Azure DevOps Work Items should be in In Progress state and this only change if the state was in Open
 async function handleOpenedPr(workItemId) {
-    let patchDocument = [
-        {
-            op: "add",
-            path: "/fields/System.State",
-            value: process.env.propenstate
-        }
-    ];
+    var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
+    var currentWorkItemState = workItem.fields["System.State"];
 
-    await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
+    if (currentWorkItemState === process.env.propenstate) {
+        let patchDocument = [
+            {
+                op: "add",
+                path: "/fields/System.State",
+                value: process.env.inprogressstate
+            }
+        ];
+        await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
+    }
     return true;
 }
 exports.handleOpenedPr = handleOpenedPr;
 
+// Handling Merged PRs, Azure DevOps Work Items should be in Closed state and this should only change if it was in In Progress
 async function handleMergedPr(workItemId) {
-    let patchDocument = [
-        {
-            op: "add",
-            path: "/fields/System.State",
-            value: process.env.closedstate
-        }
-    ];
+    var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
+    var currentWorkItemState = workItem.fields["System.State"];
 
-    await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
+    if (currentWorkItemState === process.env.inprogressstate) {
+        let patchDocument = [
+            {
+                op: "add",
+                path: "/fields/System.State",
+                value: process.env.closedstate
+            }
+        ];
+
+        await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
+    }
     return true;
 }
 exports.handleMergedPr = handleMergedPr;
 
+// Handling Closed PRs, Azure DevOps Work Items should be set back to In Progress if not already closed
 async function handleClosedPr(workItemId) {
-    let patchDocument = [
-        {
-            op: "add",
-            path: "/fields/System.State",
-            value: process.env.inprogressstate
-        }
-    ];
+    var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
+    var currentWorkItemState = workItem.fields["System.State"];
 
-    await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
+    if (currentWorkItemState === process.env.inprogressstate || currentWorkItemState === process.env.openstate) {
+        let patchDocument = [
+            {
+                op: "add",
+                path: "/fields/System.State",
+                value: process.env.inprogressstate
+            }
+        ];
+
+        await azureDevOpsHandler.updateWorkItem(patchDocument, workItemId);
+    }
     return true;
 }
 exports.handleClosedPr = handleClosedPr;
