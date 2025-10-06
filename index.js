@@ -33,12 +33,12 @@ async function main(){
             var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
             if (workItem.fields["System.WorkItemType"] === "Task" || workItem.fields["System.WorkItemType"] === "Maintenance Story"  || workItem.fields["System.WorkItemType"] === "Enabler Story"  || workItem.fields["System.WorkItemType"] === "User Story" || workItem.fields["System.WorkItemType"] === "Feature") {
                 console.log("Linked work item is a Task, Story Type or Feature, continuing");
-                return;
             }
             else {
                 console.log("Linked work item is not a Task, Story Type or Feature, Exiting");
                 // throw error for this case
-                throw new Error("Linked work item is not a Task, Story Type or Feature");
+                core.setFailed("Linked work item is not a Task, Story Type or Feature");
+                return;
             }
 
             // Move the work item to the correct state
