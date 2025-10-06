@@ -37,7 +37,8 @@ async function main(){
             }
             else {
                 console.log("Linked work item is not a Task, Story Type or Feature, Exiting");
-                core.setFailed("Linked work item is not a Task, Story Type or Feature");
+                // throw error for this case
+                throw new Error("Linked work item is not a Task, Story Type or Feature");
             }
 
             // Move the work item to the correct state
