@@ -31,7 +31,7 @@ async function main(){
 
             // Check if the Linked work item is not either a Maintenance Story, Enabler Story, User Story, Task, or Feature
             var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
-            if (workItem.fields["System.WorkItemType"] === "Task" || workItem.fields["System.WorkItemType"] === "Maintenance Story"  || workItem.fields["System.WorkItemType"] === "Enabler Story"  || workItem.fields["System.WorkItemType"] === "User Story" || workItem.fields["System.WorkItemType"] === "Feature") {
+            if (workItem.fields["System.WorkItemType"] === "Task" || workItem.fields["System.WorkItemType"] === "Story" || workItem.fields["System.WorkItemType"] === "Maintenance Story"  || workItem.fields["System.WorkItemType"] === "Enabler Story"  || workItem.fields["System.WorkItemType"] === "User Story" || workItem.fields["System.WorkItemType"] === "Feature") {
                 console.log("Linked work item is a Task, Story Type or Feature, continuing");
             }
             else {
