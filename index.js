@@ -28,14 +28,26 @@ async function main(){
             }
 
             var workItemId = prHandler.getWorkItemIdFromPrTitle(prName);
+            var parentWorkItemId;
+            var parentWorkItem;
 
             // Check if the Linked work item is not either a Maintenance Story, Enabler Story, User Story, Task, or Feature
             var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
-            if (workItem.fields["System.WorkItemType"] === "Task" || workItem.fields["System.WorkItemType"] === "Story" || workItem.fields["System.WorkItemType"] === "Maintenance Story"  || workItem.fields["System.WorkItemType"] === "Enabler Story"  || workItem.fields["System.WorkItemType"] === "User Story" || workItem.fields["System.WorkItemType"] === "Feature") {
+            if (workItem.fields["System.WorkItemType"] === "Story" || workItem.fields["System.WorkItemType"] === "Feature") {
                 console.log("Linked work item is a Task, Story Type or Feature, continuing");
             }
+            else if (workItem.fields["System.WorkItemType"] === "Task") {
+                parentWorkItemId = await prHandler.getParent(workItemId);
+                parentWorkItem = await azureDevOpsHandler.getWorkItem(parentWorkItemId);
+                if (parentWorkItem.fields["System.WorkItemType"] === "Story") {
+                    console.log("Linked work item is a Task, Story Type or Feature, continuing");
+                }
+                else {
+                    core.setFailed("Linked work item is a Task, but it's parent is not a Story");
+                    return;
+                }
+            }
             else {
-                console.log("Linked work item is not a Task, Story Type or Feature, Exiting");
                 // throw error for this case
                 core.setFailed("Linked work item is not a Task, Story Type or Feature");
                 return;
