@@ -23,7 +23,7 @@ async function main(){
             var prName = await prHandler.getPrBody();
 
             if (prName === undefined) {
-                core.setFailed("Couldn't read PR name properly, ending checks");
+                core.setFailed("Couldn't read PR Body properly, ending checks");
                 return;
             }
 
