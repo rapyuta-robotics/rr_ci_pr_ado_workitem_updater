@@ -56,6 +56,25 @@ function getWorkItemIdFromPrTitle(fullPrBody) {
 }
 exports.getWorkItemIdFromPrTitle = getWorkItemIdFromPrTitle;
 
+async function getParent(workItemId) {
+    var azureDevOpsClient = await getAzureDevOpsClient();
+
+    // Check if the Work item is a task and get the Parent ID
+    var workItem = await azureDevOpsClient.getWorkItem(workItemId);
+    if (workItem.fields["System.WorkItemType"] === "Task") {
+        var parentWorkItemId = workItem.fields["System.Parent"];
+        if (parentWorkItemId === undefined) {
+            // throw error for this case
+            core.setFailed("Task is not a child of another task");
+            return false;
+        }
+        else {
+            return parentWorkItemId;
+        }
+    }
+}
+exports.getParent = getParent;
+
 // Handling Open PRs, Azure DevOps Work Items should be in In Progress state and this only change if the state was in Open
 async function handleOpenedPr(workItemId) {
     var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
