@@ -43,17 +43,18 @@ async function main(){
 
             // Move the work item to the correct state
             try {
-                if ((await prHandler.isPrOpen()) === true) {
-                    console.log("PR was opened, so moving AB#"+workItemId+" to "+process.env.propenstate+" state");
-                    await prHandler.handleOpenedPr(workItemId);
-                }
-                else if ((await prHandler.isPrMerged()) === true) {
-                    console.log("PR was merged, so moving AB#"+workItemId+" to "+process.env.closedstate+" state");
-                    await prHandler.handleMergedPr(workItemId);
-                }
-                else if ((await prHandler.isPrClosed()) === true) {
-                    console.log("PR was closed without merging, so moving AB#"+workItemId+" to "+process.env.inprogressstate+ " state");
-                    await prHandler.handleClosedPr(workItemId);
+                // ignore Feature for now TODO: add support for Feature States
+                if (workItem.fields["System.WorkItemType"] !== "Feature") {
+                    if ((await prHandler.isPrOpen()) === true) {
+                        console.log("PR was opened, so moving AB#" + workItemId + " to " + process.env.propenstate + " state");
+                        await prHandler.handleOpenedPr(workItemId);
+                    } else if ((await prHandler.isPrMerged()) === true) {
+                        console.log("PR was merged, so moving AB#" + workItemId + " to " + process.env.closedstate + " state");
+                        await prHandler.handleMergedPr(workItemId);
+                    } else if ((await prHandler.isPrClosed()) === true) {
+                        console.log("PR was closed without merging, so moving AB#" + workItemId + " to " + process.env.inprogressstate + " state");
+                        await prHandler.handleClosedPr(workItemId);
+                    }
                 }
             } catch (err) {
                 console.log("Couldn't update the work item");
