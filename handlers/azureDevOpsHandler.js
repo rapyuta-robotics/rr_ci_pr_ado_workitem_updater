@@ -1,6 +1,6 @@
 const azureDevOpsHandler = require('azure-devops-node-api');
 
-async function getAzureDevOpsClient(){
+async function getAzureDevOpsClient() {
     let authHandler = azureDevOpsHandler.getPersonalAccessTokenHandler(process.env.ado_token);
     let connection = new azureDevOpsHandler.WebApi("https://dev.azure.com/" + process.env.ado_organization, authHandler);
     let client = await connection.getWorkItemTrackingApi();
