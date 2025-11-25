@@ -57,10 +57,8 @@ function getWorkItemIdFromPrTitle(fullPrBody) {
 exports.getWorkItemIdFromPrTitle = getWorkItemIdFromPrTitle;
 
 async function getParent(workItemId) {
-    var azureDevOpsClient = await azureDevOpsHandler.getAzureDevOpsClient();
-
     // Check if the Work item is a task and get the Parent ID
-    var workItem = await azureDevOpsClient.getWorkItem(workItemId);
+    var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
     if (workItem.fields["System.WorkItemType"] === "Task") {
         var parentWorkItemId = workItem.fields["System.Parent"];
         if (parentWorkItemId === undefined) {
