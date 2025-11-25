@@ -4,6 +4,14 @@ const fetch = require("node-fetch");
 const staticFunctions = require('../staticFunctions');
 const azureDevOpsHandler = require('./azureDevOpsHandler');
 
+async function getAzureDevOpsClient(){
+    let authHandler = azureDevOpsHandler.getPersonalAccessTokenHandler(process.env.ado_token);
+    let connection = new azureDevOpsHandler.WebApi("https://dev.azure.com/" + process.env.ado_organization, authHandler);
+    let client = await connection.getWorkItemTrackingApi();
+
+    return client;
+}
+
 async function getPrTitle() {
     try {
         const requestUrl = "https://api.github.com/repos/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/pulls/"+process.env.pull_number;
