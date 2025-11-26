@@ -60,15 +60,14 @@ async function getParent(workItemId) {
     // Check if the Work item is a task and get the Parent ID
     var workItem = await azureDevOpsHandler.getWorkItem(workItemId);
     if (workItem.fields["System.WorkItemType"] === "Task") {
-        console.log(workItem);
         var parentWorkItemId = workItem.fields["System.Parent"];
-        console.log(parentWorkItemId);
         if (parentWorkItemId === undefined) {
             // throw error for this case
             core.setFailed("Task is not a child of another task");
             return false;
         }
         else {
+            console.log("Task is found to have a parent ID of: " + parentWorkItemId);
             return parentWorkItemId;
         }
     }
