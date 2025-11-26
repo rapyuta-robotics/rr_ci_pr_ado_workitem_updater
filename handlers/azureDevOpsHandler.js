@@ -10,8 +10,7 @@ async function getAzureDevOpsClient(){
 
 async function getWorkItem(workItemId) {
     var azureDevOpsClient = await getAzureDevOpsClient();
-
-    return await azureDevOpsClient.getWorkItem(workItemId);
+    return await azureDevOpsClient.getWorkItem(workItemId,undefined, undefined,"All");
 }
 exports.getWorkItem = getWorkItem
 
