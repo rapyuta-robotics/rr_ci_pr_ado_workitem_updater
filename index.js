@@ -56,7 +56,7 @@ async function main(){
             // Move the work item to the correct state
             try {
                 // ignore Feature for now TODO: add support for Feature States
-                if (workItem.fields["System.WorkItemType"] !== "Feature") {
+                if (workItem.fields["System.WorkItemType"] !== "Feature" || workItem.fields["System.WorkItemType"] !== "Release") {
                     if ((await prHandler.isPrOpen()) === true) {
                         console.log("PR was opened, so moving AB#" + workItemId + " to " + process.env.propenstate + " state");
                         await prHandler.handleOpenedPr(workItemId);
