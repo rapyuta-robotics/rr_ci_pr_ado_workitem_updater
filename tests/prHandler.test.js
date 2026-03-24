@@ -42,3 +42,32 @@ test('Handling merged PR', async () => {
     var updateDone = await prhandler.handleMergedPr(workItemIdToTestOn);
     expect(updateDone).toBe(true);
 });
+
+// Release branch detection tests
+test('getReleaseVersionFromBranch returns version for valid release branch', () => {
+    expect(prhandler.getReleaseVersionFromBranch("release/1.2")).toBe("1.2");
+});
+
+test('getReleaseVersionFromBranch returns version for multi-digit version', () => {
+    expect(prhandler.getReleaseVersionFromBranch("release/10.25")).toBe("10.25");
+});
+
+test('getReleaseVersionFromBranch returns null for non-release branch', () => {
+    expect(prhandler.getReleaseVersionFromBranch("devel")).toBeNull();
+});
+
+test('getReleaseVersionFromBranch returns null for feature branch', () => {
+    expect(prhandler.getReleaseVersionFromBranch("feature/my-feature")).toBeNull();
+});
+
+test('getReleaseVersionFromBranch returns null for release branch with three-part version', () => {
+    expect(prhandler.getReleaseVersionFromBranch("release/1.2.3")).toBeNull();
+});
+
+test('getReleaseVersionFromBranch returns null for branch with release prefix but no version', () => {
+    expect(prhandler.getReleaseVersionFromBranch("release/")).toBeNull();
+});
+
+test('getReleaseVersionFromBranch returns null for branch with extra path segments', () => {
+    expect(prhandler.getReleaseVersionFromBranch("release/1.2/hotfix")).toBeNull();
+});

@@ -26,3 +26,41 @@ async function updateWorkItem(patchDocument, workItemId) {
     );
 }
 exports.updateWorkItem = updateWorkItem;
+
+async function findReleaseWorkItem(releaseVersion) {
+    var azureDevOpsClient = await getAzureDevOpsClient();
+
+    var wiql = {
+        query: "SELECT [System.Id] FROM WorkItems WHERE [System.WorkItemType] = 'Release' AND [System.Title] CONTAINS '" + releaseVersion + "' AND [System.TeamProject] = '" + process.env.ado_project + "'"
+    };
+
+    var result = await azureDevOpsClient.queryByWiql(wiql, { project: process.env.ado_project });
+
+    if (result.workItems && result.workItems.length > 0) {
+        return result.workItems[0].id;
+    }
+
+    return null;
+}
+exports.findReleaseWorkItem = findReleaseWorkItem;
+
+async function linkWorkItemToRelease(workItemId, releaseWorkItemId) {
+    var releaseWorkItemUrl = "https://dev.azure.com/" + process.env.ado_organization + "/" + process.env.ado_project + "/_apis/wit/workItems/" + releaseWorkItemId;
+
+    let patchDocument = [
+        {
+            op: "add",
+            path: "/relations/-",
+            value: {
+                rel: "System.LinkTypes.Related",
+                url: releaseWorkItemUrl,
+                attributes: {
+                    comment: "Automatically linked by CI when PR was merged into release branch"
+                }
+            }
+        }
+    ];
+
+    await updateWorkItem(patchDocument, workItemId);
+}
+exports.linkWorkItemToRelease = linkWorkItemToRelease;

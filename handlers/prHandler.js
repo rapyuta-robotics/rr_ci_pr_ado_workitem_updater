@@ -42,6 +42,34 @@ async function getPrBody() {
 }
 exports.getPrBody = getPrBody;
 
+async function getPrTargetBranch() {
+    try {
+        const requestUrl = "https://api.github.com/repos/"+process.env.ghrepo_owner+"/"+process.env.ghrepo+"/pulls/"+process.env.pull_number;
+
+        const fetchResponse = await fetch(requestUrl, {
+            method: 'GET',
+            headers: staticFunctions.getRequestHeaders()
+        });
+
+        const jsonResponse = await fetchResponse.json();
+
+        return jsonResponse.base.ref;
+    } catch (err) {
+        console.log("Couldn't obtain PR target branch for PR number " + process.env.pull_number);
+        core.setFailed(err.toString());
+    }
+}
+exports.getPrTargetBranch = getPrTargetBranch;
+
+function getReleaseVersionFromBranch(branchName) {
+    var match = branchName.match(/^release\/(\d+\.\d+)$/);
+    if (match) {
+        return match[1];
+    }
+    return null;
+}
+exports.getReleaseVersionFromBranch = getReleaseVersionFromBranch;
+
 function getWorkItemIdFromPrTitle(fullPrBody) {
     try {
         var foundMatches = fullPrBody.match(/AB#[(0-9)]*/g);
