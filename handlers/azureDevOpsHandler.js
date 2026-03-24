@@ -31,7 +31,7 @@ async function findReleaseWorkItem(releaseVersion) {
     var azureDevOpsClient = await getAzureDevOpsClient();
 
     var wiql = {
-        query: "SELECT [System.Id] FROM WorkItems WHERE [System.WorkItemType] = 'Release' AND [System.Title] CONTAINS '" + releaseVersion + "' AND [System.TeamProject] = '" + process.env.ado_project + "'"
+        query: "SELECT [System.Id] FROM WorkItems WHERE [System.WorkItemType] = 'Release' AND [System.Title] CONTAINS WORDS '" + releaseVersion + "' AND [System.TeamProject] = '" + process.env.ado_project + "'"
     };
 
     var result = await azureDevOpsClient.queryByWiql(wiql, { project: process.env.ado_project });
