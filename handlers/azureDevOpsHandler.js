@@ -21,7 +21,7 @@ async function updateWorkItem(patchDocument, workItemId) {
         (customHeaders = []),
         (document = patchDocument),
         (id = workItemId),
-        (project = process.env.project),
+        (project = process.env.ado_project),
         (validateOnly = false)
     );
 }
@@ -36,8 +36,10 @@ async function findReleaseWorkItem(releaseVersion) {
 
     var result = await azureDevOpsClient.queryByWiql(wiql, { project: process.env.ado_project });
 
-    if (result.workItems && result.workItems.length > 0) {
+    if (result.workItems && result.workItems.length === 1) {
         return result.workItems[0].id;
+    } else if (result.workItems && result.workItems.length > 1) {
+        console.log("WARNING: Multiple Release work items found for version '" + releaseVersion + "'. Not linking to avoid selecting an incorrect Release.");
     }
 
     return null;

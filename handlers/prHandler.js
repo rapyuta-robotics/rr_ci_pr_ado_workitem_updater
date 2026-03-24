@@ -51,17 +51,26 @@ async function getPrTargetBranch() {
             headers: staticFunctions.getRequestHeaders()
         });
 
+        if (!fetchResponse.ok) {
+            console.log("Couldn't obtain PR target branch for PR number " + process.env.pull_number + ". HTTP status: " + fetchResponse.status);
+            return null;
+        }
+
         const jsonResponse = await fetchResponse.json();
 
-        return jsonResponse.base.ref;
+        return jsonResponse.base && jsonResponse.base.ref ? jsonResponse.base.ref : null;
     } catch (err) {
         console.log("Couldn't obtain PR target branch for PR number " + process.env.pull_number);
-        core.setFailed(err.toString());
+        console.log(err.toString());
+        return null;
     }
 }
 exports.getPrTargetBranch = getPrTargetBranch;
 
 function getReleaseVersionFromBranch(branchName) {
+    if (typeof branchName !== 'string' || branchName.length === 0) {
+        return null;
+    }
     var match = branchName.match(/^release\/(\d+\.\d+)$/);
     if (match) {
         return match[1];

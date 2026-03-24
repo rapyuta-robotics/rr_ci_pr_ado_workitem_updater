@@ -53,17 +53,22 @@ async function main(){
                 return;
             }
 
+            // Determine PR state once to avoid redundant GitHub API calls
+            var prIsOpen = await prHandler.isPrOpen();
+            var prIsMerged = await prHandler.isPrMerged();
+            var prIsClosed = !prIsOpen && !prIsMerged ? await prHandler.isPrClosed() : false;
+
             // Move the work item to the correct state
             try {
                 // ignore Feature for now TODO: add support for Feature States
                 if (workItem.fields["System.WorkItemType"] === "Story" || workItem.fields["System.WorkItemType"] === "Task") {
-                    if ((await prHandler.isPrOpen()) === true) {
+                    if (prIsOpen === true) {
                         console.log("PR was opened, so moving AB#" + workItemId + " to " + process.env.propenstate + " state");
                         await prHandler.handleOpenedPr(workItemId);
-                    } else if ((await prHandler.isPrMerged()) === true) {
+                    } else if (prIsMerged === true) {
                         console.log("PR was merged, so moving AB#" + workItemId + " to " + process.env.closedstate + " state");
                         await prHandler.handleMergedPr(workItemId);
-                    } else if ((await prHandler.isPrClosed()) === true) {
+                    } else if (prIsClosed === true) {
                         console.log("PR was closed without merging, so moving AB#" + workItemId + " to " + process.env.inprogressstate + " state");
                         await prHandler.handleClosedPr(workItemId);
                     }
@@ -75,7 +80,7 @@ async function main(){
 
             // Link work item to Release when PR is merged into a release branch
             try {
-                if ((await prHandler.isPrMerged()) === true) {
+                if (prIsMerged === true) {
                     var targetBranch = await prHandler.getPrTargetBranch();
                     var releaseVersion = prHandler.getReleaseVersionFromBranch(targetBranch);
 

@@ -71,3 +71,15 @@ test('getReleaseVersionFromBranch returns null for branch with release prefix bu
 test('getReleaseVersionFromBranch returns null for branch with extra path segments', () => {
     expect(prhandler.getReleaseVersionFromBranch("release/1.2/hotfix")).toBeNull();
 });
+
+test('getReleaseVersionFromBranch returns null for undefined input', () => {
+    expect(prhandler.getReleaseVersionFromBranch(undefined)).toBeNull();
+});
+
+test('getReleaseVersionFromBranch returns null for null input', () => {
+    expect(prhandler.getReleaseVersionFromBranch(null)).toBeNull();
+});
+
+test('getReleaseVersionFromBranch returns null for empty string', () => {
+    expect(prhandler.getReleaseVersionFromBranch("")).toBeNull();
+});
