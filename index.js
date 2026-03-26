@@ -6,7 +6,7 @@ const prHandler = require("./handlers/prHandler");
 const branchHandler = require("./handlers/branchHandler");
 const staticFunctions = require("./staticFunctions");
 const azureDevOpsHandler = require("./handlers/azureDevOpsHandler");
-const version = "2.1.0";
+const version = "2.2.0";
 global.Headers = fetch.Headers;
 
 main();
@@ -78,14 +78,36 @@ async function main(){
                 core.setFailed(err.toString());
             }
 
-            // Link work item to Release when PR is merged into a release branch
+            // Link work item to Release when PR is merged into a release branch or devel
             try {
                 if (prIsMerged === true) {
                     var targetBranch = await prHandler.getPrTargetBranch();
-                    var releaseVersion = prHandler.getReleaseVersionFromBranch(targetBranch);
+                    var branchVersion = prHandler.getReleaseVersionFromBranch(targetBranch);
+                    var allTags = await prHandler.getRepoTags();
+                    var nextVersion = null;
 
-                    if (releaseVersion !== null) {
-                        console.log("PR was merged into release branch: " + targetBranch + " (version " + releaseVersion + ")");
+                    if (branchVersion !== null) {
+                        // Release branch: calculate next RC version from tags matching this branch
+                        console.log("PR was merged into release branch: " + targetBranch + " (branch version " + branchVersion + ")");
+                        nextVersion = prHandler.calculateNextVersion(allTags, branchVersion);
+
+                        if (nextVersion === null) {
+                            console.log("WARNING: Could not calculate next version for branch " + targetBranch);
+                        }
+                    } else if (prHandler.isDevelBranch(targetBranch)) {
+                        // Devel branch: calculate next minor version from latest tag across all versions
+                        console.log("PR was merged into devel branch: " + targetBranch);
+                        nextVersion = prHandler.calculateNextVersionFromDevel(allTags);
+
+                        if (nextVersion === null) {
+                            console.log("WARNING: No existing tags found in repo, cannot determine next version for devel merge. Skipping release linking.");
+                        }
+                    }
+
+                    if (nextVersion !== null) {
+                        var repoName = process.env.ghrepo;
+                        var releaseTitle = "[" + repoName + "] " + nextVersion;
+                        console.log("Calculated next version: " + nextVersion + " (release title: " + releaseTitle + ")");
 
                         // Determine which work item to link to the release
                         // For Tasks, link the parent Story; for Stories, link directly; skip Feature/Release
@@ -102,31 +124,34 @@ async function main(){
                         }
 
                         if (workItemToLink !== null) {
-                            var releaseWorkItemId = await azureDevOpsHandler.findReleaseWorkItem(releaseVersion);
+                            // Find or create the Release work item
+                            var releaseWorkItemId = await azureDevOpsHandler.findReleaseWorkItem(releaseTitle);
 
-                            if (releaseWorkItemId !== null) {
-                                // Check if the link already exists to avoid duplicates
-                                var itemToCheck = await azureDevOpsHandler.getWorkItem(workItemToLink);
-                                var alreadyLinked = false;
+                            if (releaseWorkItemId === null) {
+                                console.log("Release work item '" + releaseTitle + "' not found, creating it");
+                                releaseWorkItemId = await azureDevOpsHandler.createReleaseWorkItem(releaseTitle);
+                                console.log("Created Release work item AB#" + releaseWorkItemId + " with title '" + releaseTitle + "'");
+                            }
 
-                                if (itemToCheck.relations) {
-                                    for (var i = 0; i < itemToCheck.relations.length; i++) {
-                                        if (itemToCheck.relations[i].url && itemToCheck.relations[i].url.endsWith("/" + releaseWorkItemId)) {
-                                            alreadyLinked = true;
-                                            break;
-                                        }
+                            // Check if the link already exists to avoid duplicates
+                            var itemToCheck = await azureDevOpsHandler.getWorkItem(workItemToLink);
+                            var alreadyLinked = false;
+
+                            if (itemToCheck.relations) {
+                                for (var i = 0; i < itemToCheck.relations.length; i++) {
+                                    if (itemToCheck.relations[i].url && itemToCheck.relations[i].url.endsWith("/" + releaseWorkItemId)) {
+                                        alreadyLinked = true;
+                                        break;
                                     }
                                 }
+                            }
 
-                                if (alreadyLinked) {
-                                    console.log("AB#" + workItemToLink + " is already linked to Release AB#" + releaseWorkItemId + ", skipping");
-                                } else {
-                                    console.log("Linking AB#" + workItemToLink + " to Release AB#" + releaseWorkItemId);
-                                    await azureDevOpsHandler.linkWorkItemToRelease(workItemToLink, releaseWorkItemId);
-                                    console.log("Successfully linked AB#" + workItemToLink + " to Release AB#" + releaseWorkItemId);
-                                }
+                            if (alreadyLinked) {
+                                console.log("AB#" + workItemToLink + " is already linked to Release AB#" + releaseWorkItemId + ", skipping");
                             } else {
-                                console.log("WARNING: Could not find a Release work item for version " + releaseVersion + " in ADO project " + process.env.ado_project);
+                                console.log("Linking AB#" + workItemToLink + " to Release AB#" + releaseWorkItemId);
+                                await azureDevOpsHandler.linkWorkItemToRelease(workItemToLink, releaseWorkItemId);
+                                console.log("Successfully linked AB#" + workItemToLink + " to Release AB#" + releaseWorkItemId);
                             }
                         }
                     }
